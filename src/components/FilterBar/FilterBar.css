@@ -1,0 +1,74 @@
+.filter-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(15, 20, 24, 0.95);
+  backdrop-filter: blur(12px);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.filter-bar__pills {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filter-bar__pills::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-bar__pill {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  font-size: 1.2rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface-variant);
+  border: 1px solid var(--color-outline-variant);
+  cursor: pointer;
+}
+
+.filter-bar__pill--active {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-color: var(--color-primary);
+}
+
+.filter-bar__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-on-surface-variant);
+}
+
+.filter-bar__count {
+  font-size: 1rem;
+}
+
+.filter-bar__sort {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.filter-bar__sort-icon {
+  font-size: 1.8rem;
+}
+
+/* Hidden on desktop — Sidebar replaces this */
+@media (min-width: 1024px) {
+  .filter-bar {
+    display: none;
+  }
+}

@@ -1,0 +1,38 @@
+.report-fab {
+  position: fixed;
+  bottom: 96px; /* sits above the bottom nav bar */
+  right: var(--space-md);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-secondary);
+  color: var(--color-on-secondary-fixed);
+  border: none;
+  border-radius: var(--radius-full);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.report-fab:hover {
+  transform: scale(1.05);
+}
+
+.report-fab:active {
+  transform: scale(0.95);
+}
+
+.report-fab__icon {
+  font-variation-settings: "FILL" 1;
+}
+
+/* Hidden on desktop — Sidebar already has its own Report Shaking button */
+@media (min-width: 1024px) {
+  .report-fab {
+    display: none;
+  }
+}

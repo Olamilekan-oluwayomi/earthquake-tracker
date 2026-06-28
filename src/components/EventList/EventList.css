@@ -1,0 +1,21 @@
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .event-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    padding: 0;
+  }
+}
+
+@media (min-width: 1280px) {
+  .event-list {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}

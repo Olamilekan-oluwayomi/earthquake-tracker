@@ -1,0 +1,45 @@
+.app__layout {
+  display: flex;
+  flex: 1;
+}
+
+.app__main {
+  flex: 1;
+  min-width: 0;
+}
+.app__section-heading {
+  display: none; /* hidden on mobile, FilterBar's count covers this there */
+}
+
+@media (min-width: 768px) {
+  .app__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .app__main {
+    padding: var(--space-xl);
+  }
+
+  .app__section-heading {
+    display: block;
+    margin-bottom: var(--space-md);
+  }
+
+  .app__section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-on-surface);
+    margin: 0;
+  }
+
+  .app__section-subtitle {
+    font-size: 1rem;
+    color: var(--color-on-surface-variant);
+    margin: var(--space-xs) 0 0 0;
+  }
+}
