@@ -27,7 +27,7 @@ function EventCard({
       <div className="event-card__main">
         <div className="event-card__badge">
           <span className="event-card__badge-value">
-            {magnitude.toFixed(1)}
+            {magnitude === null ? "N/A" : magnitude.toFixed(1)}
           </span>
           <span className="event-card__badge-label">{getTierLabel(tier)}</span>
         </div>

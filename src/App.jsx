@@ -8,6 +8,7 @@ import StatsModule from "./components/StatsModule/StatsModule";
 import BottomNav from "./components/BottomNav/BottomNav";
 import ReportShakingButton from "./components/ReportShakingButton/ReportShakingButton";
 import { useEffect, useState } from "react";
+import EventCardSkeleton from "./components/EventCardSkeleton/EventCardSkeleton";
 
 function formatTimeAgo(timestamp) {
   const diffMs = Date.now() - timestamp;
@@ -42,31 +43,52 @@ function App() {
   const [earthquakes, setEarthquakes] = useState([]);
   const [magnitudeFilter, setMagnitudeFilter] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
+  const [timeframe, setTimeframe] = useState("day");
+  const [visibleCount, setVisibleCount] = useState(20);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(function () {
-    async function fetchEarthquake() {
-      try {
-        const res = await fetch(
-          "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
-        );
+  useEffect(
+    function () {
+      async function fetchEarthquake() {
+        try {
+          setIsLoading(true);
+          setError(null);
+          const res = await fetch(
+            `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_${timeframe}.geojson`,
+          );
 
-        if (!res.ok) throw new Error("Data fetching went wrong");
+          if (!res.ok) throw new Error("Data fetching went wrong");
 
-        const data = await res.json();
+          const data = await res.json();
 
-        setEarthquakes((data.features || []).map(transformEarthquake));
-      } catch (error) {
-        console.error(error);
+          setEarthquakes((data.features || []).map(transformEarthquake));
+        } catch (err) {
+          console.error(err);
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
       }
-    }
 
-    fetchEarthquake();
-  }, []);
+      fetchEarthquake();
+    },
+    [timeframe],
+  );
 
   const filteredEarthquakes = earthquakes.filter((eq) => {
-    if (magnitudeFilter === "all") return true;
-    if (magnitudeFilter === "significant") return eq.sig >= 600;
-    return eq.magnitude >= Number(magnitudeFilter);
+    const matchesSearch =
+      searchTerm === "" ||
+      eq.place.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesMagnitude = (() => {
+      if (magnitudeFilter === "all") return true;
+      if (magnitudeFilter === "significant") return eq.sig >= 600;
+      return eq.magnitude >= Number(magnitudeFilter);
+    })();
+
+    return matchesSearch && matchesMagnitude;
   });
 
   const sortedEarthquakes = filteredEarthquakes.slice().sort((a, b) => {
@@ -74,23 +96,47 @@ function App() {
     if (sortBy === "strongest") return b.magnitude - a.magnitude;
   });
 
+  const visibleEarthquakes = sortedEarthquakes.slice(0, visibleCount);
+
   function handleMagnitudeFilter(value) {
     setMagnitudeFilter(value);
   }
-
   function handleSortBy(value) {
     setSortBy(value);
   }
+  function handleTimeframeChange(value) {
+    setTimeframe(value);
+  }
+  function handleLoadMore() {
+    setVisibleCount((prev) => prev + 30);
+  }
+  function handleSearchTerm(value) {
+    setSearchTerm(value);
+  }
+
+  const avgMagnitude =
+    earthquakes.length === 0
+      ? 0
+      : (
+          earthquakes.reduce((acc, eq) => acc + eq.magnitude, 0) /
+          earthquakes.length
+        ).toFixed(1);
+  const significantCount = earthquakes.filter((eq) => eq.sig >= 600).length;
+  const globalAlertsCount = earthquakes.filter(
+    (eq) => eq.alert !== null,
+  ).length;
 
   return (
     <div className="app">
-      <Header />
+      <Header searchTerm={searchTerm} onSearchTerm={handleSearchTerm} />
       <div className="app__layout">
         <Sidebar
           onMagnitudeFilter={handleMagnitudeFilter}
           magnitudeFilter={magnitudeFilter}
           onSortBy={handleSortBy}
           sortBy={sortBy}
+          timeframe={timeframe}
+          onTimeframeChange={handleTimeframeChange}
         />
         <main className="app__main">
           <MapSection />
@@ -100,15 +146,44 @@ function App() {
             onSortBy={handleSortBy}
             sortBy={sortBy}
             eventCount={sortedEarthquakes.length}
+            searchTerm={searchTerm}
+            onSearchTerm={handleSearchTerm}
           />
           <div className="app__section-heading">
             <h2 className="app__section-title">Recent Seismic Events</h2>
             <p className="app__section-subtitle">
-              Found {sortedEarthquakes.length} earthquakes in the last 24 hours
+              Found {sortedEarthquakes.length} earthquakes in the Past{" "}
+              {timeframe}s
             </p>
           </div>
-          <EventList earthquakes={sortedEarthquakes} />
-          <StatsModule />
+
+          <div className="event-list">
+            {isLoading &&
+              Array.from({ length: 6 }).map((_, i) => (
+                <EventCardSkeleton key={i} />
+              ))}
+          </div>
+          {!error && !isLoading && (
+            <EventList
+              earthquakes={visibleEarthquakes}
+              onLoadMore={handleLoadMore}
+              sortedEarthquakes={sortedEarthquakes}
+            />
+          )}
+          {error && (
+            <div className="app__error">
+              <span className="material-symbols-outlined app__error-icon">
+                error
+              </span>
+              <p className="app__error-title">Couldn't load earthquake data</p>
+              <p className="app__error-message">{error}</p>
+            </div>
+          )}
+          <StatsModule
+            avgMagnitude={avgMagnitude}
+            significantCount={significantCount}
+            globalAlertsCount={globalAlertsCount}
+          />
         </main>
       </div>
       <BottomNav />

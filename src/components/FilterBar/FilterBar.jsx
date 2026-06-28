@@ -6,9 +6,24 @@ function FilterBar({
   onSortBy,
   sortBy,
   eventCount,
+  searchTerm,
+  onSearchTerm,
 }) {
   return (
     <div className="filter-bar">
+      <div className="filter-bar__search">
+        <span className="material-symbols-outlined filter-bar__search-icon">
+          search
+        </span>
+        <input
+          type="text"
+          className="filter-bar__search-input"
+          placeholder="Search region..."
+          value={searchTerm}
+          onChange={(e) => onSearchTerm(e.target.value)}
+        />
+      </div>
+
       <div className="filter-bar__pills">
         <button
           className={`filter-bar__pill ${magnitudeFilter === "all" ? "filter-bar__pill--active" : ""}`}

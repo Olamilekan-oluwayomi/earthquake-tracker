@@ -1,6 +1,6 @@
 import "./Header.css";
 
-function Header() {
+function Header({ searchTerm, onSearchTerm }) {
   return (
     <header className="header">
       <div className="header__brand">
@@ -40,6 +40,8 @@ function Header() {
             type="text"
             className="header__search-input"
             placeholder="Search region..."
+            value={searchTerm}
+            onChange={(e) => onSearchTerm(e.target.value)}
           />
         </div>
         <button className="header__icon-btn">

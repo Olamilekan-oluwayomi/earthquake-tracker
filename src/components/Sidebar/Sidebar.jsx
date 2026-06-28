@@ -1,6 +1,13 @@
 import "./Sidebar.css";
 
-function Sidebar({ onMagnitudeFilter, magnitudeFilter, onSortBy, sortBy }) {
+function Sidebar({
+  onMagnitudeFilter,
+  magnitudeFilter,
+  onSortBy,
+  sortBy,
+  timeframe,
+  onTimeframeChange,
+}) {
   return (
     <aside className="sidebar">
       <div className="sidebar__content">
@@ -35,11 +42,15 @@ function Sidebar({ onMagnitudeFilter, magnitudeFilter, onSortBy, sortBy }) {
 
         <div className="sidebar__section">
           <label className="sidebar__label">Timeframe</label>
-          <select className="sidebar__select" defaultValue="Past Day">
-            <option>Past Hour</option>
-            <option>Past Day</option>
-            <option>Past Week</option>
-            <option>Past Month</option>
+          <select
+            className="sidebar__select"
+            value={timeframe}
+            onChange={(e) => onTimeframeChange(e.target.value)}
+          >
+            <option value="hour">Past Hour</option>
+            <option value="day">Past Day</option>
+            <option value="week">Past Week</option>
+            <option value="month">Past Month</option>
           </select>
         </div>
 

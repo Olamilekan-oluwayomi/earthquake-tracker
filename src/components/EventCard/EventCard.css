@@ -62,9 +62,9 @@
   font-weight: 600;
   color: var(--color-on-surface);
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: wrap;
+  overflow: visible;
+  /* text-overflow: ellipsis; */
 }
 
 .event-card__meta {
