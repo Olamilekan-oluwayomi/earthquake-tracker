@@ -31,6 +31,8 @@ function transformEarthquake(feature) {
     magnitude: feature.properties.mag,
     time: feature.properties.time,
     formattedTime: formatTimeAgo(feature.properties.time),
+    longitude: feature.geometry.coordinates[0],
+    latitude: feature.geometry.coordinates[1],
     depth: feature.geometry.coordinates[2].toFixed(1),
     tsunami: feature.properties.tsunami === 1,
     status: feature.properties.status,
@@ -51,12 +53,14 @@ function App() {
 
   useEffect(
     function () {
+      const controller = new AbortController();
       async function fetchEarthquake() {
         try {
           setIsLoading(true);
           setError(null);
           const res = await fetch(
             `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_${timeframe}.geojson`,
+            { signal: controller.signal },
           );
 
           if (!res.ok) throw new Error("Data fetching went wrong");
@@ -64,15 +68,22 @@ function App() {
           const data = await res.json();
 
           setEarthquakes((data.features || []).map(transformEarthquake));
-        } catch (err) {
-          console.error(err);
-          setError(err.message);
-        } finally {
+          setError(null);
           setIsLoading(false);
+        } catch (err) {
+          if (err.name !== "AbortError") {
+            console.error(err);
+            setError(err.message);
+            setIsLoading(false);
+          }
         }
       }
 
       fetchEarthquake();
+
+      return function () {
+        controller.abort();
+      };
     },
     [timeframe],
   );
@@ -139,7 +150,7 @@ function App() {
           onTimeframeChange={handleTimeframeChange}
         />
         <main className="app__main">
-          <MapSection />
+          <MapSection earthquakes={sortedEarthquakes} />
           <FilterBar
             onMagnitudeFilter={handleMagnitudeFilter}
             magnitudeFilter={magnitudeFilter}
