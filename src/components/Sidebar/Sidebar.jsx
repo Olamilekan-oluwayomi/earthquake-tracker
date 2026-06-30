@@ -16,6 +16,7 @@ function Sidebar({
           <div className="sidebar__magnitude-grid">
             <button
               className={`filter-bar__pill ${magnitudeFilter === "all" ? "filter-bar__pill--active" : ""}`}
+              onClick={() => onMagnitudeFilter("all")}
             >
               All
             </button>
