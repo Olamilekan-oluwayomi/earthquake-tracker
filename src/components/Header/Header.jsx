@@ -1,6 +1,13 @@
 import "./Header.css";
+import { useRef, useEffect } from "react";
 
 function Header({ searchTerm, onSearchTerm }) {
+  const inputEl = useRef(null);
+
+  useEffect(function () {
+    inputEl.current.focus();
+  });
+
   return (
     <header className="header">
       <div className="header__brand">
@@ -42,6 +49,7 @@ function Header({ searchTerm, onSearchTerm }) {
             placeholder="Search region..."
             value={searchTerm}
             onChange={(e) => onSearchTerm(e.target.value)}
+            ref={inputEl}
           />
         </div>
         <button className="header__icon-btn">

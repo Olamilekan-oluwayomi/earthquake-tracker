@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import "./FilterBar.css";
 
 function FilterBar({
@@ -9,6 +10,12 @@ function FilterBar({
   searchTerm,
   onSearchTerm,
 }) {
+  const inputEl = useRef(null);
+
+  useEffect(function () {
+    inputEl.current.focus();
+  });
+
   return (
     <div className="filter-bar">
       <div className="filter-bar__search">
@@ -21,6 +28,7 @@ function FilterBar({
           placeholder="Search region..."
           value={searchTerm}
           onChange={(e) => onSearchTerm(e.target.value)}
+          ref={inputEl}
         />
       </div>
 
